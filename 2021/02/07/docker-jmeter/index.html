@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://bizhen-yang.github.io">
-  <title>使用docker完成jmeter分布式部署 | 西西的博客</title>
+  <title>使用Docker完成Jmeter分布式部署 | 西西的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="article">
-<meta property="og:title" content="使用docker完成jmeter分布式部署">
+  <meta name="description" content="[TOC] 概述本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，贡读者参考 步骤使用Docker完成Jmeter分布式部署，步骤概括为以下五个步骤：1、创建Dockerfile文件，包括基本镜像、master、slave三种类型的Dockerfile文件2、创建Docker网络3、创建Docker容器，包括master，slave容器，并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Docker完成Jmeter分布式部署">
 <meta property="og:url" content="https://bizhen-yang.github.io/2021/02/07/docker-jmeter/index.html">
 <meta property="og:site_name" content="西西的博客">
+<meta property="og:description" content="[TOC] 概述本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，贡读者参考 步骤使用Docker完成Jmeter分布式部署，步骤概括为以下五个步骤：1、创建Dockerfile文件，包括基本镜像、master、slave三种类型的Dockerfile文件2、创建Docker网络3、创建Docker容器，包括master，slave容器，并">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-02-07T03:25:24.181Z">
-<meta property="article:modified_time" content="2021-02-07T07:15:25.684Z">
+<meta property="article:modified_time" content="2021-02-07T10:16:49.108Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="docker">
 <meta property="article:tag" content="jmeter">
@@ -145,7 +147,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      使用docker完成jmeter分布式部署
+      使用Docker完成Jmeter分布式部署
     </h1>
   
 
@@ -158,7 +160,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>[TOC]</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，贡读者参考</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><p>使用Docker完成Jmeter分布式部署，步骤概括为以下五个步骤：<br>1、创建Dockerfile文件，包括基本镜像、master、slave三种类型的Dockerfile文件<br>2、创建Docker网络<br>3、创建Docker容器，包括master，slave容器，并且加入到步骤2中的网络中<br>4、配置Jmeter配置文件<br>5、进行分布式测试，验证功能正常</p>
+
       
 
       
