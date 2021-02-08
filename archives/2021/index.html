@@ -300,21 +300,21 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
 		var isIndex = $(".pageViews").length > 1 ? true : false;
 
 		function showTime() {
-			var Counter = AV.Object.extend("Counter");
+			var blog = AV.Object.extend("blog");
 			if (isIndex) {
 				$(".pageViews").each(function () {
-					showPageViewsNum($(this), Counter);
+					showPageViewsNum($(this), blog);
 					addPageViewsNum($(this));
 				});
 			} else {
-				showPageViewsNum($(".pageViews"), Counter);
+				showPageViewsNum($(".pageViews"), blog);
 				addPageViewsNum($(".pageViews"));
 			}
 		}
 
 		//显示阅读量
-		function showPageViewsNum(ele, Counter) {
-			var query = new AV.Query("Counter");
+		function showPageViewsNum(ele, blog) {
+			var query = new AV.Query("blog");
 			var url = ele.attr('id').trim();
 			query.equalTo("words", url);
 			query.count().then(function (number) {
@@ -327,8 +327,8 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
 		//追加阅读量
 		function addPageViewsNum(ele) {
 			var url = ele.attr('id').trim();
-			var Counter = AV.Object.extend("Counter");
-			var query = new Counter;
+			var blog = AV.Object.extend("blog");
+			var query = new blog;
 			query.save({
 				words: url
 			}).then(function (object) { });
