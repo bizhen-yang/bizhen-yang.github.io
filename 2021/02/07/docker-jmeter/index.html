@@ -8,15 +8,15 @@
   <link rel="dns-prefetch" href="https://bizhen-yang.github.io">
   <title>使用Docker完成Jmeter分布式部署 | 西西的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="目录 概述 步骤 创建Dockerfile文件 创建Docker网络 创建Docker容器 master容器Jmeter配置 分布式测试   资源提供  概述本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，供读者参考">
+  <meta name="description" content="目录 概述 步骤 创建Dockerfile文件 创建Docker网络 创建Docker容器 获取ip 分布式测试   资源提供  概述本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，供读者参考">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Docker完成Jmeter分布式部署">
 <meta property="og:url" content="https://bizhen-yang.github.io/2021/02/07/docker-jmeter/">
 <meta property="og:site_name" content="西西的博客">
-<meta property="og:description" content="目录 概述 步骤 创建Dockerfile文件 创建Docker网络 创建Docker容器 master容器Jmeter配置 分布式测试   资源提供  概述本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，供读者参考">
+<meta property="og:description" content="目录 概述 步骤 创建Dockerfile文件 创建Docker网络 创建Docker容器 获取ip 分布式测试   资源提供  概述本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，供读者参考">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-02-07T03:25:24.181Z">
-<meta property="article:modified_time" content="2021-02-08T08:26:34.017Z">
+<meta property="article:modified_time" content="2021-02-09T05:54:49.864Z">
 <meta property="article:author" content="西西">
 <meta property="article:tag" content="docker">
 <meta property="article:tag" content="jmeter">
@@ -52,7 +52,7 @@
 			<img src="/image/48312176.jpeg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">xixi</a></h1>
+		  <h1 class="header-author"><a href="/">西西的博客</a></h1>
 		</hgroup>
 		
 
@@ -102,7 +102,7 @@
 				<img src="/image/48312176.jpeg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">xixi</h1>
+			  <h1 class="header-author js-header-author">西西的博客</h1>
 			</hgroup>
 			
 			
@@ -172,7 +172,7 @@
 <li><a href="#%E5%88%9B%E5%BB%BADockerfile%E6%96%87%E4%BB%B6">创建Dockerfile文件</a></li>
 <li><a href="#%E5%88%9B%E5%BB%BADocker%E7%BD%91%E7%BB%9C">创建Docker网络</a></li>
 <li><a href="#%E5%88%9B%E5%BB%BADocker%E5%AE%B9%E5%99%A8">创建Docker容器</a></li>
-<li><a href="#master%E5%AE%B9%E5%99%A8Jmeter%E9%85%8D%E7%BD%AE">master容器Jmeter配置</a></li>
+<li><a href="#%E8%8E%B7%E5%8F%96ip">获取ip</a></li>
 <li><a href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%B5%8B%E8%AF%95">分布式测试</a></li>
 </ul>
 </li>
@@ -180,10 +180,10 @@
 </ul>
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文介绍使用Docker完成Jmeter分布式部署的步骤，以及步骤详情。文章最后提供实验中生成的镜像文件夹，供读者参考</p>
 <a id="more"></a> 
-<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><p>使用Docker完成Jmeter分布式部署，步骤概括为以下五个步骤：<br>1、创建Dockerfile文件，包括基本镜像、master、slave三种类型的Dockerfile文件<br>2、创建Docker网络<br>3、创建Docker容器，包括master，slave容器，并且加入到步骤2中的网络中<br>4、master容器Jmeter配置<br>5、分布式测试，验证功能正常</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><p>使用Docker完成Jmeter分布式部署，步骤概括为以下五个步骤：<br>1、创建Dockerfile文件，包括基本镜像、master、slave三种类型的Dockerfile文件<br>2、创建Docker网络<br>3、创建Docker容器，包括master，slave容器，并且加入到步骤2中的网络中<br>4、Jmeter配置<br>5、分布式测试，验证功能正常</p>
 <h2 id="创建Dockerfile文件"><a href="#创建Dockerfile文件" class="headerlink" title="创建Dockerfile文件"></a>创建Dockerfile文件</h2><p>Dockerfile的内容包括Jmeter安装，Jmeter安装路径配置环境变量，启动Jmeter。master和slave的Jmeter安装方式是一样的，这里将安装步骤写成单独的Dockerfile文件。master只设置端口，slave设置好端口后直接启动。下面是3个Dockerfile文件内容。</p>
 <p>我这里使用本地下载好了Jmeter安装包，使用拷贝的方式生成镜像。也可以使用网上下载的方式进行安装。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># Dockerfile name is &#39;jmeterbase&#39;</span><br><span class="line"></span><br><span class="line">FROM openjdk:8-jre-slim</span><br><span class="line">MAINTAINER yangbz</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">COPY apache-jmeter-5.4.tgz &#x2F;home&#x2F;</span><br><span class="line"># Install JMeter</span><br><span class="line">RUN   cd &#x2F;home \</span><br><span class="line">      &amp;&amp; tar -xzf apache-jmeter-5.4.tgz </span><br><span class="line"></span><br><span class="line"># Set ENV</span><br><span class="line">ENV JMETER_HOME &#x2F;home&#x2F;jmeter&#x2F;apache-jmeter-5.4</span><br><span class="line">ENV PATH $JMETER_HOME&#x2F;bin:$PATH</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># Dockerfile name is &#39;jmeterbase&#39;</span><br><span class="line"></span><br><span class="line">FROM openjdk:8-jre-slim</span><br><span class="line">MAINTAINER yangbz</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">COPY apache-jmeter-5.4.tgz &#x2F;home&#x2F;</span><br><span class="line"># Install JMeter</span><br><span class="line">RUN   cd &#x2F;home \</span><br><span class="line">      &amp;&amp; tar -xzf apache-jmeter-5.4.tgz \</span><br><span class="line">      &amp;&amp; rm apache-jmeter-5.4.tgz \</span><br><span class="line">      &amp;&amp; sed -i &#39;s&#x2F;#server.rmi.ssl.disable&#x3D;false&#x2F;server.rmi.ssl.disable&#x3D;true&#x2F;g&#39; &#x2F;home&#x2F;apache-jmeter-5.4&#x2F;bin&#x2F;jmeter.properties </span><br><span class="line"></span><br><span class="line"># Set ENV</span><br><span class="line">ENV JMETER_HOME &#x2F;home&#x2F;apache-jmeter-5.4</span><br><span class="line">ENV PATH $JMETER_HOME&#x2F;bin:$PATH</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Dockerfile name is &#39;jmetermaster&#39;</span><br><span class="line">FROM jmeterbase</span><br><span class="line">MAINTAINER yangbz</span><br><span class="line"></span><br><span class="line"># Ports to be exposed from the container for JMeter Master</span><br><span class="line">EXPOSE 60000</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># Dockerfile name is &#39;jmeterslave&#39;</span><br><span class="line">FROM jmeterbase</span><br><span class="line">MAINTAINER yangbz</span><br><span class="line"></span><br><span class="line"># Ports to be exposed from the container for JMeter Slaves&#x2F;Server</span><br><span class="line">EXPOSE 1099 50000</span><br><span class="line"></span><br><span class="line"># Application to run on starting the container</span><br><span class="line">ENTRYPOINT $JMETER_HOME&#x2F;bin&#x2F;jmeter-server \</span><br><span class="line">                        -Dserver.rmi.localport&#x3D;50000 \</span><br><span class="line">                        -Dserver_port&#x3D;1099</span><br></pre></td></tr></table></figure>
 <p>镜像构建命令如下</p>
@@ -191,9 +191,14 @@
 <h2 id="创建Docker网络"><a href="#创建Docker网络" class="headerlink" title="创建Docker网络"></a>创建Docker网络</h2><p>创建Docker网络</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create -d bridge net</span><br></pre></td></tr></table></figure>
 <h2 id="创建Docker容器"><a href="#创建Docker容器" class="headerlink" title="创建Docker容器"></a>创建Docker容器</h2><p>创建master和slave容器，并且加入到创建的Docker网络中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name jmetermaster  --network net  jmetermaster</span><br><span class="line">docker run -d --name jmeterslave   --network net  jmeterslave</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="master容器Jmeter配置"><a href="#master容器Jmeter配置" class="headerlink" title="master容器Jmeter配置"></a>master容器Jmeter配置</h2><p>获取slave的ip地址，将ip配置到master的jmeter.properties文件中</p>
-<h2 id="分布式测试"><a href="#分布式测试" class="headerlink" title="分布式测试"></a>分布式测试</h2><h1 id="资源提供"><a href="#资源提供" class="headerlink" title="资源提供"></a>资源提供</h1>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -dit --name master  --network net  jmetermaster</span><br><span class="line">docker run -dit --name slave   --network net  jmeterslave</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="获取ip"><a href="#获取ip" class="headerlink" title="获取ip"></a>获取ip</h2><p>slave的ip地址</p>
+<p>使用命令查看slave的ip地址为172.20.0.3</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">docker inspcet slave</span><br><span class="line"></span><br><span class="line">#控制台输出</span><br><span class="line">...</span><br><span class="line">......</span><br><span class="line">    &quot;Networks&quot;: &#123;</span><br><span class="line">                &quot;test-net&quot;: &#123;</span><br><span class="line">                    &quot;IPAMConfig&quot;: null,</span><br><span class="line">                    &quot;Links&quot;: null,</span><br><span class="line">                    &quot;Aliases&quot;: [</span><br><span class="line">                        &quot;80642dea3f4c&quot;</span><br><span class="line">                    ],</span><br><span class="line">                    &quot;NetworkID&quot;: &quot;2d2e44dced0aa1f9ad7664186ce9b5492f2027c480ccba2f49448a7241f8dab3&quot;,</span><br><span class="line">                    &quot;EndpointID&quot;: &quot;d712ca07cf0a148e820cb49cb21038e96674f7a304bcea64fdf182d82cd042d6&quot;,</span><br><span class="line">                    &quot;Gateway&quot;: &quot;172.20.0.1&quot;,</span><br><span class="line">                    &quot;IPAddress&quot;: &quot;172.20.0.3&quot;,</span><br><span class="line">                    &quot;IPPrefixLen&quot;: 16,</span><br><span class="line">                    &quot;IPv6Gateway&quot;: &quot;&quot;,</span><br><span class="line">                    &quot;GlobalIPv6Address&quot;: &quot;&quot;,</span><br><span class="line">                    &quot;GlobalIPv6PrefixLen&quot;: 0,</span><br><span class="line">                    &quot;MacAddress&quot;: &quot;02:42:ac:14:00:03&quot;,</span><br><span class="line">                    &quot;DriverOpts&quot;: null</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">......</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="分布式测试"><a href="#分布式测试" class="headerlink" title="分布式测试"></a>分布式测试</h2><p>准备了一个test.jmx脚本，将脚本拷贝到master内，运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">docker cp test.jmx master:&#x2F;home</span><br><span class="line"></span><br><span class="line">#运行</span><br><span class="line">jmeter -n -t test.jmx -R172.20.0.3</span><br><span class="line"></span><br><span class="line">#控制台输出</span><br><span class="line">Creating summariser &lt;summary&gt;</span><br><span class="line">Created the tree successfully using test.jmx</span><br><span class="line">Configuring remote engine: 172.20.0.3</span><br><span class="line">Starting distributed test with remote engines: [172.20.0.3] @ Tue Feb 09 03:51:51 UTC 2021 (1612842711460)</span><br><span class="line">Remote engines have been started:[172.20.0.3]</span><br><span class="line">Waiting for possible Shutdown&#x2F;StopTestNow&#x2F;HeapDump&#x2F;ThreadDump message on port 4445</span><br><span class="line">summary &#x3D;      1 in 00:00:01 &#x3D;    0.8&#x2F;s Avg:   881 Min:   881 Max:   881 Err:     0 (0.00%)</span><br><span class="line">Tidying up remote @ Tue Feb 09 03:51:54 UTC 2021 (1612842714795)</span><br><span class="line">... end of run</span><br></pre></td></tr></table></figure>
       
 
       
